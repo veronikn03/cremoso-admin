@@ -27,6 +27,15 @@ type Pago = {
 
 type Cuenta = { nombre: string; telefono: string | null };
 
+type PagoRow = {
+  fecha: string;
+  monto_usd: number;
+  moneda: string;
+  monto_original: number;
+  metodo: string;
+  pedidos: { numero: number } | null;
+};
+
 function chipPago(o: Pedido) {
   if (o.estado === "cancelado") return <span className="chip muted">Cancelado</span>;
   if (o.saldo_usd <= 0.009) return <span className="chip good">Pagado</span>;
@@ -74,7 +83,7 @@ export default function MiCuenta({ negocio, whatsapp, tasa }: { negocio: string;
       }),
     );
     setPagos(
-      (pgs ?? []).map((p) => ({
+      ((pgs ?? []) as unknown as PagoRow[]).map((p) => ({
         fecha: p.fecha,
         monto_usd: p.monto_usd,
         moneda: p.moneda,
