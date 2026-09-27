@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { fUSD, parseNum } from "@/lib/format";
+import { catalogoCompartirTxt } from "@/lib/whatsapp";
 import { guardarProducto, eliminarProducto, entradaInventario } from "@/actions/productos";
 import type { Producto } from "./page";
 
@@ -12,10 +13,21 @@ function stockChip(p: Producto) {
   return <span className="chip good">Disponible</span>;
 }
 
-export default function InventarioClient({ productos }: { productos: Producto[] }) {
+export default function InventarioClient({
+  productos,
+  negocio,
+  whatsapp,
+  tasa,
+}: {
+  productos: Producto[];
+  negocio: string;
+  whatsapp: string;
+  tasa: number;
+}) {
   const [q, setQ] = useState("");
   const [editing, setEditing] = useState<Producto | null | "new">(null);
   const [entradaFor, setEntradaFor] = useState<Producto | null>(null);
+  const [compartir, setCompartir] = useState(false);
 
   const lista = productos.filter(
     (p) =>
@@ -34,9 +46,14 @@ export default function InventarioClient({ productos }: { productos: Producto[] 
           value={q}
           onChange={(e) => setQ(e.target.value)}
         />
-        <button className="btn pri" onClick={() => setEditing("new")}>
-          + Producto
-        </button>
+        <div className="chips">
+          <button className="btn" onClick={() => setCompartir(true)}>
+            Compartir catálogo
+          </button>
+          <button className="btn pri" onClick={() => setEditing("new")}>
+            + Producto
+          </button>
+        </div>
       </div>
 
       {lista.length ? (
@@ -91,7 +108,59 @@ export default function InventarioClient({ productos }: { productos: Producto[] 
         <ProductoSheet producto={editing === "new" ? null : editing} onClose={() => setEditing(null)} />
       )}
       {entradaFor && <EntradaSheet producto={entradaFor} onClose={() => setEntradaFor(null)} />}
+      {compartir && (
+        <CompartirSheet productos={productos} negocio={negocio} whatsapp={whatsapp} tasa={tasa} onClose={() => setCompartir(false)} />
+      )}
     </>
+  );
+}
+
+function CompartirSheet({
+  productos,
+  negocio,
+  whatsapp,
+  tasa,
+  onClose,
+}: {
+  productos: Producto[];
+  negocio: string;
+  whatsapp: string;
+  tasa: number;
+  onClose: () => void;
+}) {
+  const [copiado, setCopiado] = useState(false);
+  const texto = catalogoCompartirTxt({ negocio, whatsapp, tasa, productos });
+
+  async function copiar() {
+    try {
+      await navigator.clipboard.writeText(texto);
+      setCopiado(true);
+      setTimeout(() => setCopiado(false), 2000);
+    } catch {
+      // el usuario puede seleccionar el texto manualmente
+    }
+  }
+
+  return (
+    <div className="ov" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="sheet" role="dialog" aria-modal="true">
+        <div className="sh">
+          <h2>Catálogo para compartir</h2>
+          <button className="x" onClick={onClose} aria-label="Cerrar">
+            ×
+          </button>
+        </div>
+        <p className="muted" style={{ marginTop: 0 }}>
+          Pégalo en tu estado de WhatsApp, Instagram o un grupo. Solo incluye lo que tiene existencia.
+        </p>
+        <pre className="msg">{texto}</pre>
+        <div className="foot">
+          <button className="btn pri" onClick={copiar}>
+            {copiado ? "Copiado" : "Copiar texto"}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 

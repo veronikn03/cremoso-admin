@@ -31,6 +31,9 @@ export default function AdminNav() {
           {label}
         </Link>
       ))}
+      <a className="viewtog" href="/" target="_blank" rel="noopener">
+        Ver como cliente
+      </a>
       <button className="viewtog" onClick={signOut} type="button">
         Salir
       </button>

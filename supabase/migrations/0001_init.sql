@@ -147,7 +147,7 @@ end $$;
 -- El cliente canjea su código: valida contra el hash guardado y vincula su sesión (anónima o no) a esa fila de cliente.
 create or replace function canjear_codigo(p_code text)
 returns table(cliente_id uuid, nombre text)
-language plpgsql security definer set search_path = public as $$
+language plpgsql security definer set search_path = public, extensions as $$
 declare v_cliente clientes%rowtype;
 begin
   if auth.uid() is null then
@@ -173,7 +173,7 @@ end $$;
 -- Solo la dueña: genera (o cambia) el código de un cliente. Devuelve el código en texto plano UNA vez para enviarlo por WhatsApp.
 create or replace function regenerar_codigo(p_cliente_id uuid)
 returns text
-language plpgsql security definer set search_path = public as $$
+language plpgsql security definer set search_path = public, extensions as $$
 declare v_code text;
 begin
   if not is_admin() then

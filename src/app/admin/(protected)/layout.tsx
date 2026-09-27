@@ -1,18 +1,20 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { withRetry } from "@/lib/supabase/retry";
 import AdminNav from "./AdminNav";
 
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   const supabase = await createClient();
+
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await withRetry(() => supabase.auth.getUser());
 
   if (!user) {
     redirect("/admin/login");
   }
 
-  const { data: isAdmin } = await supabase.rpc("is_admin");
+  const { data: isAdmin } = await withRetry(() => supabase.rpc("is_admin"));
 
   if (!isAdmin) {
     redirect("/admin/login");

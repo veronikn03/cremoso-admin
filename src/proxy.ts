@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { withRetry } from "@/lib/supabase/retry";
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -26,7 +27,7 @@ export async function proxy(request: NextRequest) {
   );
 
   // Refresh the session if expired; required for Server Components.
-  await supabase.auth.getUser();
+  await withRetry(() => supabase.auth.getUser());
 
   return response;
 }

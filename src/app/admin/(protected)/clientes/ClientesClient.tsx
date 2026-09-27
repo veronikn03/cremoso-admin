@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { fUSD } from "@/lib/format";
+import { waLink, accesoMsg } from "@/lib/whatsapp";
 import { guardarCliente, generarCodigoCliente } from "@/actions/clientes";
 import type { Cliente } from "./page";
 
-export default function ClientesClient({ clientes }: { clientes: Cliente[] }) {
+export default function ClientesClient({ clientes, negocio }: { clientes: Cliente[]; negocio: string }) {
   const [q, setQ] = useState("");
   const [editing, setEditing] = useState<Cliente | null | "new">(null);
   const [codigoFor, setCodigoFor] = useState<Cliente | null>(null);
@@ -92,7 +93,7 @@ export default function ClientesClient({ clientes }: { clientes: Cliente[] }) {
       {editing && (
         <ClienteSheet cliente={editing === "new" ? null : editing} onClose={() => setEditing(null)} />
       )}
-      {codigoFor && <CodigoSheet cliente={codigoFor} onClose={() => setCodigoFor(null)} />}
+      {codigoFor && <CodigoSheet cliente={codigoFor} negocio={negocio} onClose={() => setCodigoFor(null)} />}
     </>
   );
 }
@@ -155,11 +156,12 @@ function ClienteSheet({ cliente, onClose }: { cliente: Cliente | null; onClose: 
   );
 }
 
-function CodigoSheet({ cliente, onClose }: { cliente: Cliente; onClose: () => void }) {
+function CodigoSheet({ cliente, negocio, onClose }: { cliente: Cliente; negocio: string; onClose: () => void }) {
   const [codigo, setCodigo] = useState<string | null>(null);
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
   const [confirmar, setConfirmar] = useState(!cliente.codigo_hash);
+  const [copiado, setCopiado] = useState(false);
 
   async function generar() {
     setBusy(true);
@@ -170,6 +172,24 @@ function CodigoSheet({ cliente, onClose }: { cliente: Cliente; onClose: () => vo
   }
 
   const fmt = (c: string) => c.slice(0, 5) + "-" + c.slice(5);
+  const mensaje = codigo
+    ? accesoMsg({
+        negocio,
+        clienteNombre: cliente.nombre,
+        codigo,
+        cuentaUrl: `${window.location.origin}/cuenta`,
+      })
+    : "";
+
+  async function copiar() {
+    try {
+      await navigator.clipboard.writeText(mensaje);
+      setCopiado(true);
+      setTimeout(() => setCopiado(false), 2000);
+    } catch {
+      // el usuario puede seleccionar el texto manualmente
+    }
+  }
 
   return (
     <div className="ov" onClick={(e) => e.target === e.currentTarget && onClose()}>
@@ -182,10 +202,16 @@ function CodigoSheet({ cliente, onClose }: { cliente: Cliente; onClose: () => vo
         </div>
         {codigo ? (
           <div>
-            <p className="muted">
-              Nuevo código (se muestra una sola vez — cópialo y envíaselo por WhatsApp ahora):
-            </p>
+            <p className="muted">Nuevo código (se muestra una sola vez):</p>
             <p className="code">{fmt(codigo)}</p>
+            <div className="chips" style={{ marginTop: 10 }}>
+              <a className="btn sm pri" target="_blank" rel="noopener" href={waLink(cliente.telefono, mensaje)}>
+                Enviar acceso por WhatsApp
+              </a>
+              <button className="btn sm" type="button" onClick={copiar}>
+                {copiado ? "Copiado" : "Copiar mensaje"}
+              </button>
+            </div>
           </div>
         ) : confirmar ? (
           <div>

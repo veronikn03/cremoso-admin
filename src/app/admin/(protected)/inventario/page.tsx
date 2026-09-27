@@ -16,11 +16,10 @@ export type Producto = {
 
 export default async function InventarioPage() {
   const supabase = await createClient();
-  const { data: productos } = await supabase
-    .from("productos")
-    .select("*")
-    .order("categoria")
-    .order("nombre");
+  const [{ data: productos }, { data: config }] = await Promise.all([
+    supabase.from("productos").select("*").order("categoria").order("nombre"),
+    supabase.from("config").select("negocio, whatsapp, tasa").eq("id", 1).single(),
+  ]);
 
   const lista = (productos ?? []) as Producto[];
   const valor = lista
@@ -38,7 +37,12 @@ export default async function InventarioPage() {
           </div>
         </div>
       </div>
-      <InventarioClient productos={lista} />
+      <InventarioClient
+        productos={lista}
+        negocio={config?.negocio ?? "Cremoso Gourmet"}
+        whatsapp={config?.whatsapp ?? ""}
+        tasa={config?.tasa ?? 0}
+      />
     </div>
   );
 }
