@@ -40,7 +40,9 @@ export default async function ResumenPage() {
   const pagados = activos.filter((o) => o.saldo_usd <= 0.009);
   const cancelados = pedidos.length - activos.length;
 
-  const alerta = (productos ?? []).filter((p) => p.activo && p.stock <= p.stock_min);
+  const disponibles = (productos ?? [])
+    .filter((p) => p.activo && p.stock > 0)
+    .sort((a, b) => a.stock - b.stock);
 
   if (!(productos ?? []).length && !pedidos.length) {
     return (
@@ -120,14 +122,14 @@ export default async function ResumenPage() {
         </section>
         <section className="panel">
           <div className="bar">
-            <h3 style={{ margin: 0 }}>Postres agotados o por agotarse</h3>
+            <h3 style={{ margin: 0 }}>Postres disponibles</h3>
             <Link className="btn sm ghost" href="/admin/inventario">
               Inventario
             </Link>
           </div>
           <div className="list">
-            {alerta.length ? (
-              alerta.map((p) => (
+            {disponibles.length ? (
+              disponibles.map((p) => (
                 <div className="row" key={p.id}>
                   <div>
                     <div className="t">{p.nombre}</div>
@@ -139,7 +141,7 @@ export default async function ResumenPage() {
                 </div>
               ))
             ) : (
-              <p className="muted">Todo el inventario tiene existencia suficiente.</p>
+              <p className="muted">No hay postres disponibles por ahora.</p>
             )}
           </div>
         </section>
