@@ -89,9 +89,7 @@ export default function PagoSheet({
           >
             <span className="muted">Saldo pendiente</span>
             <span style={{ textAlign: "right" }}>
-              <b style={{ fontSize: 20 }} className="num">
-                {fUSD(saldo)}
-              </b>
+              <b className="amount-lg">{fUSD(saldo)}</b>
               {tasa > 0 && <small className="bs">{fBs(saldo * tasa)}</small>}
             </span>
           </div>

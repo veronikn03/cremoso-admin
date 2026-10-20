@@ -22,8 +22,12 @@ export default function CuentaClient({
     <div className="wrap">
       <header className="top">
         <div className="brand">
-          <h1>{negocio}</h1>
-          <span>Pedidos</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/images/logo.jpg" alt="" className="brand-mark" />
+          <span style={{ display: "block" }}>
+            <h1>{negocio}</h1>
+            <span>Pedidos</span>
+          </span>
         </div>
         <Link className="btn sm" href="/">
           ← Ver catálogo

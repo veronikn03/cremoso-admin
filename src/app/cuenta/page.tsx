@@ -8,7 +8,7 @@ export default async function CuentaPage() {
     withRetry(() =>
       supabase
         .from("productos")
-        .select("id, nombre, categoria, descripcion, precio_usd, stock, stock_min")
+        .select("id, nombre, categoria, descripcion, precio_usd, stock, stock_min, imagen_url")
         .order("categoria")
         .order("nombre"),
     ),

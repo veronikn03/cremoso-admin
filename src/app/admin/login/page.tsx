@@ -28,9 +28,26 @@ export default function LoginPage() {
 
   return (
     <div className="wrap" style={{ maxWidth: 420, paddingTop: 60 }}>
-      <div className="brand" style={{ marginBottom: 24 }}>
-        <h1>Cremoso Gourmet</h1>
-        <span>Panel</span>
+      <div style={{ textAlign: "center", marginBottom: 24 }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/logo.jpg"
+          alt=""
+          style={{
+            width: 72,
+            height: 72,
+            borderRadius: "50%",
+            objectFit: "cover",
+            boxShadow: "0 4px 16px rgba(60,40,10,.3)",
+            marginBottom: 10,
+          }}
+        />
+        <h1 style={{ fontFamily: "var(--display)", fontWeight: 400, fontSize: 26, color: "var(--accent)" }}>
+          Cremoso Gourmet
+        </h1>
+        <span style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: ".12em", color: "var(--muted)" }}>
+          Panel
+        </span>
       </div>
       <div className="panel">
         <h3>Iniciar sesión</h3>

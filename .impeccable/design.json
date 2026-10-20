@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-19T00:00:00.000Z",
+  "title": "Design System: Cremoso Gourmet — Panel y Cuenta",
+  "extensions": {
+    "colorMeta": {
+      "caramelo-dorado": {
+        "role": "primary",
+        "displayName": "Caramelo Dorado",
+        "canonical": "oklch(60% 0.11 55)",
+        "tonalRamp": ["#2B1B08", "#4A2F0F", "#6B4517", "#8C5D20", "#A66F28", "#C07E33", "#D9A05F", "#EFC594"]
+      },
+      "crema": {
+        "role": "neutral",
+        "displayName": "Crema",
+        "canonical": "oklch(97% 0.015 80)",
+        "tonalRamp": ["#1D140D", "#352417", "#5A3F27", "#8A6B45", "#C7A878", "#E9DCC7", "#F3E7D4", "#FBF5EA"]
+      },
+      "chocolate-oscuro": {
+        "role": "neutral",
+        "displayName": "Chocolate Oscuro",
+        "canonical": "oklch(20% 0.03 50)",
+        "tonalRamp": ["#120B06", "#25150C", "#3A2416", "#523522", "#6E4A30", "#8C6342", "#AB7F5C", "#CBA07E"]
+      },
+      "naranja-quemado": {
+        "role": "tertiary",
+        "displayName": "Naranja Quemado",
+        "canonical": "oklch(45% 0.14 40)",
+        "tonalRamp": ["#280F02", "#421805", "#5F240A", "#7E3410", "#A8460B", "#C96A2E", "#E6924F", "#F8C396"]
+      },
+      "verde-confirmado": {
+        "role": "secondary",
+        "displayName": "Verde Confirmado",
+        "canonical": "oklch(42% 0.09 150)",
+        "tonalRamp": ["#0B1F0F", "#15331B", "#204729", "#2F6E40", "#4C8B5A", "#79AC87", "#AED1B6", "#DCEDE0"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Nombre del negocio en el header. Fraunces siempre." },
+      "title": { "displayName": "Title", "purpose": "Títulos de sección (Pedidos, Mi cuenta, categorías del catálogo)." },
+      "body": { "displayName": "Body", "purpose": "Texto corrido, formularios, filas de tabla." },
+      "label": { "displayName": "Label", "purpose": "Encabezados de tabla, etiquetas de KPI, texto de chip." }
+    },
+    "shadows": [
+      { "name": "ambiental", "value": "0 10px 40px rgba(60,40,10,.18)", "purpose": "Reservada a lo que flota sobre la página: sheets/modales y la caja de carrito sticky. Nunca en tarjetas de flujo normal." }
+    ],
+    "motion": [
+      { "name": "sheet-entrada", "value": "transform .18s ease-out, opacity .18s ease-out", "purpose": "Entrada de hojas/modales desde abajo (12px) con fade-in; respeta prefers-reduced-motion." }
+    ],
+    "breakpoints": [
+      { "name": "mobile-max", "value": "760px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Acción principal de una pantalla o formulario (Guardar pedido, Registrar pago, Enviar por WhatsApp).",
+      "html": "<button class=\"ds-btn-primary\">Guardar pedido</button>",
+      "css": ".ds-btn-primary { background: #C07E33; color: #FFFFFF; border: 1px solid #C07E33; border-radius: 10px; padding: 8px 14px; font-family: Mulish, system-ui, sans-serif; font-weight: 600; font-size: 14px; cursor: pointer; transition: filter 0.15s ease-out; } .ds-btn-primary:hover { filter: brightness(1.07); } .ds-btn-primary:focus-visible { outline: 2.5px solid #C07E33; outline-offset: 2px; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Acción secundaria dentro de una tarjeta ya cargada (Editar, Ver todo, Cancelar).",
+      "html": "<button class=\"ds-btn-ghost\">Ver todo</button>",
+      "css": ".ds-btn-ghost { background: transparent; color: #C07E33; border: 1px solid transparent; border-radius: 10px; padding: 8px 14px; font-family: Mulish, system-ui, sans-serif; font-weight: 600; font-size: 14px; cursor: pointer; } .ds-btn-ghost:hover { border-color: #7C6656; }"
+    },
+    {
+      "name": "Status Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Estado de un pedido o pago: Pagado (good), Quedan pocos (warn), Pendiente (bad), Por entregar (accent).",
+      "html": "<span class=\"ds-chip ds-chip-good\">Pagado</span>",
+      "css": ".ds-chip { display: inline-block; font-family: Mulish, system-ui, sans-serif; font-size: 11.5px; font-weight: 700; letter-spacing: 0.02em; border-radius: 999px; padding: 2px 9px; white-space: nowrap; } .ds-chip-good { background: #E1EFE2; color: #2F6E40; } .ds-chip-warn { background: #F8E4D3; color: #A8460B; } .ds-chip-bad { background: #F9DEDC; color: #B3261E; } .ds-chip-accent { background: #F3E4C9; color: #C07E33; }"
+    },
+    {
+      "name": "Product Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Tarjeta de un postre en el catálogo público, con stepper de cantidad. Se ilumina con borde dorado cuando tiene unidades en el carrito.",
+      "html": "<div class=\"ds-prod ds-prod-on\"><div class=\"ds-prod-nm\">Marquesa de chocolate</div><div class=\"ds-prod-ds\">Capas de galleta y manjar, bañada en chocolate</div><div class=\"ds-prod-pr\">$3.50</div></div>",
+      "css": ".ds-prod { background: #FFFFFF; border: 1px solid #E9DCC7; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 8px; font-family: Mulish, system-ui, sans-serif; } .ds-prod-on { border-color: #C07E33; box-shadow: 0 0 0 1px #C07E33 inset; } .ds-prod-nm { font-weight: 700; font-size: 15.5px; color: #25150C; } .ds-prod-ds { font-size: 13px; color: #7C6656; } .ds-prod-pr { font-weight: 700; color: #25150C; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Campo de texto estándar para formularios (nombre, teléfono, código de acceso).",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"ABCDE-23456\" />",
+      "css": ".ds-input { width: 100%; background: #FFFFFF; border: 1px solid #E9DCC7; border-radius: 10px; padding: 9px 11px; font-family: Mulish, system-ui, sans-serif; font-size: 15px; color: #25150C; } .ds-input:focus-visible { outline: 2.5px solid #C07E33; outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "La Dulcería del Barrio",
+    "overview": "Este sistema visual existe para que el panel y la cuenta de cliente se sientan como la misma dulcería que es cremosito, no como una herramienta de oficina pegada a un negocio casero. La paleta y la tipografía ya vienen de cremosito; lo que falta es la confianza visual: el logo redondo, el calor de los acentos, el detalle hecho a mano que hace que algo se sienta querido y no genérico. El estado actual es un punto de partida correcto pero todavía tímido: tarjetas planas con borde de 1px, tipografía de marca solo en títulos, casi ninguna decoración. El trabajo de esta fase es llevarlo más cerca de cremosito sin sacrificar la claridad que la dueña necesita para leer números y saldos de un vistazo.",
+    "keyCharacteristics": [
+      "Cálido y de barrio, nunca corporativo ni frío.",
+      "Fraunces para identidad y jerarquía; Mulish para todo lo que se lee en bloque.",
+      "Plano en reposo, sombra ambiental solo para lo que flota.",
+      "Naranja quemado y caramelo dorado distinguibles a simple vista."
+    ],
+    "rules": [
+      { "name": "La Regla de la Familia Cálida", "body": "Verde, naranja quemado y rojo ladrillo son los únicos tres colores de estado. El naranja quemado existe a propósito para no competir con el caramelo dorado de marca.", "section": "colors" },
+      { "name": "La Regla de Fraunces con Propósito", "body": "Fraunces marca exactamente tres cosas: el nombre del negocio, los títulos de sección y los montos protagonistas. Todo lo demás es Mulish.", "section": "typography" },
+      { "name": "La Regla de lo que Flota", "body": "Si un elemento vive en el flujo normal de la página, no lleva sombra. La sombra se gana solo al despegarse físicamente del documento.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do usar Fraunces solo donde hay identidad de marca o una cifra protagonista.",
+      "Do mantener el naranja quemado y el caramelo dorado visualmente distinguibles.",
+      "Do reservar la sombra ambiental para lo que literalmente flota sobre la página.",
+      "Do priorizar que los números se lean rápido en el panel admin.",
+      "Do diseñar primero para el teléfono."
+    ],
+    "donts": [
+      "Don't usar el look genérico de dashboard SaaS.",
+      "Don't usar border-left ni border-right de color como franja decorativa.",
+      "Don't usar texto con gradiente.",
+      "Don't agregar sombra a tarjetas en flujo normal.",
+      "Don't hacer el sistema infantil ni demasiado decorativo."
+    ]
+  }
+}

@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { usePathname } from "next/navigation";
 
 const TABS: [string, string][] = [
   ["/admin", "Resumen"],
@@ -15,14 +14,6 @@ const TABS: [string, string][] = [
 
 export default function AdminNav() {
   const pathname = usePathname();
-  const router = useRouter();
-
-  async function signOut() {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/admin/login");
-    router.refresh();
-  }
 
   return (
     <nav className="tabs" role="tablist">
@@ -31,12 +22,6 @@ export default function AdminNav() {
           {label}
         </Link>
       ))}
-      <a className="viewtog" href="/" target="_blank" rel="noopener">
-        Ver como cliente
-      </a>
-      <button className="viewtog" onClick={signOut} type="button">
-        Salir
-      </button>
     </nav>
   );
 }

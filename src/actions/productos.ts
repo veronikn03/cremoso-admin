@@ -12,6 +12,7 @@ export type ProductoInput = {
   unidad: string;
   stock_min: number;
   activo: boolean;
+  imagen_url: string | null;
 };
 
 export async function guardarProducto(id: string | null, data: ProductoInput) {
@@ -24,6 +25,8 @@ export async function guardarProducto(id: string | null, data: ProductoInput) {
 
   if (error) return { error: error.message };
   revalidatePath("/admin/inventario");
+  revalidatePath("/");
+  revalidatePath("/cuenta");
   return { error: null };
 }
 

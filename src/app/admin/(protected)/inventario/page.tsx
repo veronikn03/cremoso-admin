@@ -12,6 +12,7 @@ export type Producto = {
   unidad: string;
   stock_min: number;
   activo: boolean;
+  imagen_url: string | null;
 };
 
 export default async function InventarioPage() {

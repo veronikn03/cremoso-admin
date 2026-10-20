@@ -49,7 +49,7 @@ export default function CobrarClient({
         <div className="bar" style={{ margin: 0 }}>
           <div>
             <h3>Total por cobrar</h3>
-            <div style={{ fontSize: 30, fontWeight: 700 }} className="num">
+            <div style={{ fontSize: 34 }} className="amount-lg">
               {fUSD(total)}
             </div>
             {tasa > 0 && <div className="muted num">{fBs(total * tasa)} a la tasa del día</div>}
@@ -248,7 +248,7 @@ function EstadoCuentaSheet({ cliente, pedidos, onClose }: { cliente: ClienteDeud
             <span className="muted" style={{ fontSize: 12, textTransform: "uppercase", letterSpacing: ".08em" }}>
               Saldo
             </span>
-            <div style={{ fontSize: 22, fontWeight: 700 }} className={`num ${cliente.saldo_usd > 0.009 ? "neg" : "pos"}`}>
+            <div className={`amount-lg ${cliente.saldo_usd > 0.009 ? "neg" : "pos"}`}>
               {fUSD(cliente.saldo_usd)}
             </div>
           </div>

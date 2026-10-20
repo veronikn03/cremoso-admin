@@ -9,7 +9,7 @@ export default async function Home() {
     withRetry(() =>
       supabase
         .from("productos")
-        .select("id, nombre, categoria, descripcion, precio_usd, stock, stock_min")
+        .select("id, nombre, categoria, descripcion, precio_usd, stock, stock_min, imagen_url")
         .order("categoria")
         .order("nombre"),
     ),
@@ -20,8 +20,12 @@ export default async function Home() {
     <div className="wrap">
       <header className="top">
         <div className="brand">
-          <h1>{config?.negocio || "Cremoso Gourmet"}</h1>
-          <span>Postres artesanales</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/images/logo.jpg" alt="" className="brand-mark" />
+          <span style={{ display: "block" }}>
+            <h1>{config?.negocio || "Cremoso Gourmet"}</h1>
+            <span>Postres artesanales</span>
+          </span>
         </div>
         <Link className="btn sm" href="/cuenta">
           Mi cuenta

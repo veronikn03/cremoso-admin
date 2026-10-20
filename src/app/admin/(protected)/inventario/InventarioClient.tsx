@@ -73,8 +73,31 @@ export default function InventarioClient({
               {lista.map((p) => (
                 <tr key={p.id}>
                   <td>
-                    <b>{p.nombre}</b>
-                    {p.descripcion && <small className="bs">{p.descripcion}</small>}
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      {p.imagen_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={p.imagen_url}
+                          alt=""
+                          style={{ width: 40, height: 40, objectFit: "cover", borderRadius: 8, flexShrink: 0 }}
+                        />
+                      ) : (
+                        <div
+                          aria-hidden="true"
+                          style={{
+                            width: 40,
+                            height: 40,
+                            borderRadius: 8,
+                            background: "var(--surface-2)",
+                            flexShrink: 0,
+                          }}
+                        />
+                      )}
+                      <div>
+                        <b>{p.nombre}</b>
+                        {p.descripcion && <small className="bs">{p.descripcion}</small>}
+                      </div>
+                    </div>
                   </td>
                   <td>{p.categoria || "—"}</td>
                   <td className="n">{fUSD(p.precio_usd)}</td>
@@ -173,6 +196,7 @@ function ProductoSheet({ producto, onClose }: { producto: Producto | null; onClo
   const [stockMin, setStockMin] = useState(String(producto?.stock_min ?? 3));
   const [activo, setActivo] = useState(producto?.activo ?? true);
   const [descripcion, setDescripcion] = useState(producto?.descripcion ?? "");
+  const [imagenUrl, setImagenUrl] = useState(producto?.imagen_url ?? "");
   const [err, setErr] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -196,6 +220,7 @@ function ProductoSheet({ producto, onClose }: { producto: Producto | null; onClo
       unidad: unidad.trim() || "und",
       stock_min: isNaN(mn) ? 3 : mn,
       activo,
+      imagen_url: imagenUrl.trim() || null,
     });
     setBusy(false);
     if (res.error) return setErr(res.error);
@@ -253,6 +278,24 @@ function ProductoSheet({ producto, onClose }: { producto: Producto | null; onClo
             Descripción (la ven tus clientes)
             <input value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
           </label>
+          <label className="f full">
+            Foto (URL de la imagen)
+            <input
+              value={imagenUrl}
+              onChange={(e) => setImagenUrl(e.target.value)}
+              placeholder="/images/productos/quesillo.jpg"
+            />
+          </label>
+          {imagenUrl && (
+            <div className="full">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={imagenUrl}
+                alt=""
+                style={{ width: 72, height: 72, objectFit: "cover", borderRadius: 10, border: "1px solid var(--line)" }}
+              />
+            </div>
+          )}
           <div className="err full">{err}</div>
           <div className="foot full">
             {producto &&

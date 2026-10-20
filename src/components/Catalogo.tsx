@@ -12,6 +12,7 @@ export type ProductoPublico = {
   precio_usd: number;
   stock: number;
   stock_min: number;
+  imagen_url: string | null;
 };
 
 export default function Catalogo({
@@ -30,6 +31,7 @@ export default function Catalogo({
   const [telefono, setTelefono] = useState("");
   const [nota, setNota] = useState("");
   const [copiado, setCopiado] = useState(false);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   const disponibles = productos.filter((p) => p.stock > 0);
   const categorias = [...new Set(disponibles.map((p) => p.categoria || "Dulces"))];
@@ -84,102 +86,125 @@ export default function Catalogo({
 
   return (
     <>
-      {categorias.map((cat) => (
-        <div key={cat}>
-          <div className="cat-h">{cat}</div>
-          <div className="cat-grid">
-            {disponibles
-              .filter((p) => (p.categoria || "Dulces") === cat)
-              .map((p) => {
-                const q = cart[p.id] || 0;
-                return (
-                  <div className={`prod ${q ? "on" : ""}`} key={p.id}>
-                    <div className="nm">{p.nombre}</div>
-                    <div className="ds">{p.descripcion}</div>
-                    <div className="bar" style={{ margin: 0 }}>
-                      <div className="pr">
-                        {fUSD(p.precio_usd)}
-                        {tasa > 0 && <small className="bs">{fBs(p.precio_usd * tasa)}</small>}
+      <div style={{ paddingBottom: n ? 72 : 0 }}>
+        {categorias.map((cat) => (
+          <div key={cat}>
+            <div className="cat-h">{cat}</div>
+            <div className="cat-grid">
+              {disponibles
+                .filter((p) => (p.categoria || "Dulces") === cat)
+                .map((p) => {
+                  const q = cart[p.id] || 0;
+                  return (
+                    <div className={`prod ${q ? "on" : ""}`} key={p.id}>
+                      {p.imagen_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img className="prod-photo" src={p.imagen_url} alt={p.nombre} loading="lazy" />
+                      ) : (
+                        <div className="prod-photo prod-photo-empty" aria-hidden="true" />
+                      )}
+                      <div className="nm">{p.nombre}</div>
+                      <div className="ds">{p.descripcion}</div>
+                      <div className="bar" style={{ margin: 0 }}>
+                        <div className="pr">
+                          {fUSD(p.precio_usd)}
+                          {tasa > 0 && <small className="bs">{fBs(p.precio_usd * tasa)}</small>}
+                        </div>
+                        <span className="muted" style={{ fontSize: 12.5 }}>
+                          {p.stock <= p.stock_min ? `¡Quedan ${p.stock}!` : `${p.stock} disponibles`}
+                        </span>
                       </div>
-                      <span className="muted" style={{ fontSize: 12.5 }}>
-                        {p.stock <= p.stock_min ? `¡Quedan ${p.stock}!` : `${p.stock} disponibles`}
-                      </span>
+                      <div className="step">
+                        <button type="button" onClick={() => setQty(p.id, q - 1, p.stock)} aria-label="Quitar uno">
+                          −
+                        </button>
+                        <span>{q}</span>
+                        <button
+                          type="button"
+                          onClick={() => setQty(p.id, q + 1, p.stock)}
+                          aria-label="Agregar uno"
+                          disabled={q >= p.stock}
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
-                    <div className="step">
-                      <button type="button" onClick={() => setQty(p.id, q - 1, p.stock)} aria-label="Quitar uno">
-                        −
-                      </button>
-                      <span>{q}</span>
-                      <button
-                        type="button"
-                        onClick={() => setQty(p.id, q + 1, p.stock)}
-                        aria-label="Agregar uno"
-                        disabled={q >= p.stock}
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-          </div>
-        </div>
-      ))}
-
-      <div className="cartbox">
-        <div className="bar" style={{ marginBottom: 10 }}>
-          <div>
-            <h3 style={{ margin: 0 }}>Tu pedido</h3>
-            <div className="muted" style={{ fontSize: 13 }}>
-              {n} {n === 1 ? "dulce" : "dulces"}
+                  );
+                })}
             </div>
           </div>
-          <div style={{ textAlign: "right" }}>
-            <b style={{ fontSize: 22 }} className="num">
-              {fUSD(total)}
-            </b>
-            {tasa > 0 && <small className="bs">{fBs(total * tasa)}</small>}
+        ))}
+      </div>
+
+      {n > 0 && (
+        <button type="button" className="cart-bar" onClick={() => setCheckoutOpen(true)}>
+          <span>
+            {n} {n === 1 ? "dulce" : "dulces"}
+          </span>
+          <b className="amount-lg">{fUSD(total)}</b>
+          <span className="cart-bar-cta">Ver pedido</span>
+        </button>
+      )}
+
+      {checkoutOpen && (
+        <div className="ov" onClick={(e) => e.target === e.currentTarget && setCheckoutOpen(false)}>
+          <div className="sheet" role="dialog" aria-modal="true" aria-label="Tu pedido">
+            <div className="sh">
+              <h2>Tu pedido</h2>
+              <button className="x" onClick={() => setCheckoutOpen(false)} aria-label="Cerrar">
+                ×
+              </button>
+            </div>
+            <div className="bar" style={{ marginBottom: 10 }}>
+              <div className="muted" style={{ fontSize: 13 }}>
+                {n} {n === 1 ? "dulce" : "dulces"}
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <b className="amount-lg">{fUSD(total)}</b>
+                {tasa > 0 && <small className="bs">{fBs(total * tasa)}</small>}
+              </div>
+            </div>
+            <div className="fg">
+              <label className="f">
+                Tu nombre
+                <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} autoComplete="name" />
+              </label>
+              <label className="f">
+                Teléfono
+                <input type="tel" value={telefono} onChange={(e) => setTelefono(e.target.value)} autoComplete="tel" />
+              </label>
+              <label className="f full">
+                Nota (fecha de entrega, dedicatoria…)
+                <input type="text" value={nota} onChange={(e) => setNota(e.target.value)} />
+              </label>
+            </div>
+            <div className="foot full" style={{ marginTop: 16 }}>
+              <button className="btn" type="button" disabled={!n} onClick={copiar}>
+                {copiado ? "Copiado" : "Copiar pedido"}
+              </button>
+              <a
+                className="btn pri"
+                target="_blank"
+                rel="noopener"
+                href={waLink(whatsapp, mensaje())}
+                aria-disabled={!n}
+                onClick={(e) => !n && e.preventDefault()}
+              >
+                Enviar pedido por WhatsApp
+              </a>
+            </div>
+            {whatsapp ? (
+              <p className="muted" style={{ fontSize: 12.5, margin: "10px 0 0" }}>
+                Si WhatsApp no se abre, copia el pedido y envíalo al{" "}
+                <b className="num" style={{ userSelect: "all" }}>
+                  {whatsapp}
+                </b>
+                .
+              </p>
+            ) : null}
           </div>
         </div>
-        <div className="fg">
-          <label className="f">
-            Tu nombre
-            <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} autoComplete="name" />
-          </label>
-          <label className="f">
-            Teléfono
-            <input type="tel" value={telefono} onChange={(e) => setTelefono(e.target.value)} autoComplete="tel" />
-          </label>
-          <label className="f full">
-            Nota (fecha de entrega, dedicatoria…)
-            <input type="text" value={nota} onChange={(e) => setNota(e.target.value)} />
-          </label>
-        </div>
-        <div className="chips" style={{ marginTop: 12 }}>
-          <a
-            className="btn pri"
-            target="_blank"
-            rel="noopener"
-            href={waLink(whatsapp, mensaje())}
-            aria-disabled={!n}
-            onClick={(e) => !n && e.preventDefault()}
-          >
-            Enviar pedido por WhatsApp
-          </a>
-          <button className="btn" type="button" disabled={!n} onClick={copiar}>
-            {copiado ? "Copiado" : "Copiar pedido"}
-          </button>
-        </div>
-        {whatsapp ? (
-          <p className="muted" style={{ fontSize: 12.5, margin: "10px 0 0" }}>
-            Si WhatsApp no se abre, copia el pedido y envíalo al{" "}
-            <b className="num" style={{ userSelect: "all" }}>
-              {whatsapp}
-            </b>
-            .
-          </p>
-        ) : null}
-      </div>
+      )}
     </>
   );
 }
