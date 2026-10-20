@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { withRetry } from "@/lib/supabase/retry";
 import Catalogo from "@/components/Catalogo";
+import HeroLogo from "@/components/HeroLogo";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -31,10 +32,33 @@ export default async function Home() {
           Mi cuenta
         </Link>
       </header>
-      <div className="hero-c">
-        <h2>Dulces disponibles hoy</h2>
-        <p>Esto es lo que hay disponible ahora mismo. Elige lo que quieres y envía tu pedido por WhatsApp; te confirmamos la entrega.</p>
-      </div>
+      <section className="hero">
+        <div className="hero-inner">
+          <HeroLogo src="/images/logo.jpg" alt={config?.negocio || "Cremoso Gourmet"} />
+          <p className="eyebrow">Postres artesanales · Caracas</p>
+          <h2>
+            El postre más <em>sabroso</em> y cremoso
+          </h2>
+          <p className="lead">
+            Esto es lo que hay disponible ahora mismo. Elige lo que quieres y envía tu pedido por WhatsApp; te
+            confirmamos la entrega.
+          </p>
+          <div className="hero-tags">
+            <span>
+              <i className="dot" />
+              Marquesas y quesillos
+            </span>
+            <span>
+              <i className="dot" />
+              Retiro en La Vega
+            </span>
+            <span>
+              <i className="dot" />
+              Delivery a domicilio
+            </span>
+          </div>
+        </div>
+      </section>
       <Catalogo
         productos={productos ?? []}
         negocio={config?.negocio ?? "Cremoso Gourmet"}
