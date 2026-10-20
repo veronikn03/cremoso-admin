@@ -24,6 +24,20 @@ export async function guardarCliente(id: string | null, data: ClienteInput) {
   return { error: null };
 }
 
+export async function eliminarCliente(id: string) {
+  const supabase = await createClient();
+  await withRetry(() => supabase.auth.getUser());
+  const { error } = await supabase.from("clientes").delete().eq("id", id);
+  if (error) {
+    if (error.code === "23503") {
+      return { error: "Este cliente tiene pedidos registrados, así que no se puede eliminar." };
+    }
+    return { error: error.message };
+  }
+  revalidatePath("/admin/clientes");
+  return { error: null };
+}
+
 export async function generarCodigoCliente(clienteId: string) {
   const supabase = await createClient();
   await withRetry(() => supabase.auth.getUser());

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { fUSD } from "@/lib/format";
 import { waLink, accesoMsg } from "@/lib/whatsapp";
-import { guardarCliente, generarCodigoCliente } from "@/actions/clientes";
+import { guardarCliente, generarCodigoCliente, eliminarCliente } from "@/actions/clientes";
 import type { Cliente } from "./page";
 
 export default function ClientesClient({ clientes, negocio }: { clientes: Cliente[]; negocio: string }) {
@@ -104,6 +104,7 @@ function ClienteSheet({ cliente, onClose }: { cliente: Cliente | null; onClose: 
   const [notas, setNotas] = useState(cliente?.notas ?? "");
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -114,6 +115,15 @@ function ClienteSheet({ cliente, onClose }: { cliente: Cliente | null; onClose: 
       telefono: telefono.trim(),
       notas: notas.trim(),
     });
+    setBusy(false);
+    if (res.error) return setErr(res.error);
+    onClose();
+  }
+
+  async function onDelete() {
+    if (!cliente) return;
+    setBusy(true);
+    const res = await eliminarCliente(cliente.id);
     setBusy(false);
     if (res.error) return setErr(res.error);
     onClose();
@@ -143,6 +153,20 @@ function ClienteSheet({ cliente, onClose }: { cliente: Cliente | null; onClose: 
           </label>
           <div className="err full">{err}</div>
           <div className="foot full">
+            {cliente &&
+              (confirmDelete ? (
+                <span style={{ marginRight: "auto" }}>
+                  <button type="button" className="btn sm danger" onClick={onDelete} disabled={busy}>
+                    Sí, eliminar
+                  </button>
+                </span>
+              ) : (
+                <span style={{ marginRight: "auto" }}>
+                  <button type="button" className="btn danger" onClick={() => setConfirmDelete(true)}>
+                    Eliminar
+                  </button>
+                </span>
+              ))}
             <button type="button" className="btn" onClick={onClose}>
               Cancelar
             </button>
