@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import { fUSD, fBs } from "@/lib/format";
 import { waLink } from "@/lib/whatsapp";
 
@@ -32,9 +32,14 @@ export default function Catalogo({
   const [nota, setNota] = useState("");
   const [copiado, setCopiado] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [catFilter, setCatFilter] = useState("Todos");
 
   const disponibles = productos.filter((p) => p.stock > 0);
   const categorias = [...new Set(disponibles.map((p) => p.categoria || "Dulces"))];
+  const vistos = useMemo(
+    () => (catFilter === "Todos" ? disponibles : disponibles.filter((p) => (p.categoria || "Dulces") === catFilter)),
+    [disponibles, catFilter],
+  );
 
   function setQty(id: string, qty: number, stock: number) {
     const q = Math.max(0, Math.min(stock, qty));
@@ -87,33 +92,58 @@ export default function Catalogo({
   return (
     <>
       <div style={{ paddingBottom: n ? 72 : 0 }}>
-        {categorias.map((cat) => (
-          <div key={cat}>
-            <div className="cat-h">{cat}</div>
-            <div className="cat-grid">
-              {disponibles
-                .filter((p) => (p.categoria || "Dulces") === cat)
-                .map((p) => {
-                  const q = cart[p.id] || 0;
-                  return (
-                    <div className={`prod ${q ? "on" : ""}`} key={p.id}>
-                      {p.imagen_url ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img className="prod-photo" src={p.imagen_url} alt={p.nombre} loading="lazy" />
-                      ) : (
-                        <div className="prod-photo prod-photo-empty" aria-hidden="true" />
-                      )}
-                      <div className="nm">{p.nombre}</div>
-                      <div className="ds">{p.descripcion}</div>
-                      <div className="bar" style={{ margin: 0 }}>
-                        <div className="pr">
-                          {fUSD(p.precio_usd)}
-                          {tasa > 0 && <small className="bs">{fBs(p.precio_usd * tasa)}</small>}
-                        </div>
-                        <span className="muted" style={{ fontSize: 12.5 }}>
-                          {p.stock <= p.stock_min ? `¡Quedan ${p.stock}!` : `${p.stock} disponibles`}
-                        </span>
-                      </div>
+        {categorias.length > 1 && (
+          <div className="cat-tabs" role="tablist">
+            <button
+              type="button"
+              className="cat-tab"
+              role="tab"
+              aria-pressed={catFilter === "Todos"}
+              aria-selected={catFilter === "Todos"}
+              onClick={() => setCatFilter("Todos")}
+            >
+              Todos
+            </button>
+            {categorias.map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                className="cat-tab"
+                role="tab"
+                aria-pressed={catFilter === cat}
+                aria-selected={catFilter === cat}
+                onClick={() => setCatFilter(cat)}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        )}
+        <div className="cat-grid">
+          {vistos.map((p, i) => {
+            const q = cart[p.id] || 0;
+            return (
+              <div className={`prod ${q ? "on" : ""}`} key={p.id} style={{ "--i": i } as CSSProperties}>
+                {p.imagen_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img className="prod-photo" src={p.imagen_url} alt={p.nombre} loading="lazy" />
+                ) : (
+                  <div className="prod-photo prod-photo-empty" aria-hidden="true" />
+                )}
+                {p.stock <= p.stock_min && <span className="prod-badge">¡Quedan {p.stock}!</span>}
+                <div className="prod-body">
+                  <div className="nm">{p.nombre}</div>
+                  <div className="ds">{p.descripcion}</div>
+                  <div className="prod-foot">
+                    <div className="pr">
+                      {fUSD(p.precio_usd)}
+                      {tasa > 0 && <small className="bs">{fBs(p.precio_usd * tasa)}</small>}
+                    </div>
+                    {q === 0 ? (
+                      <button type="button" className="add-btn" onClick={() => setQty(p.id, 1, p.stock)}>
+                        Agregar
+                      </button>
+                    ) : (
                       <div className="step">
                         <button type="button" onClick={() => setQty(p.id, q - 1, p.stock)} aria-label="Quitar uno">
                           −
@@ -128,12 +158,13 @@ export default function Catalogo({
                           +
                         </button>
                       </div>
-                    </div>
-                  );
-                })}
-            </div>
-          </div>
-        ))}
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {n > 0 && (
