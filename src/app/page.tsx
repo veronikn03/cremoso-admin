@@ -43,20 +43,6 @@ export default async function Home() {
             Esto es lo que hay disponible ahora mismo. Elige lo que quieres y envía tu pedido por WhatsApp; te
             confirmamos la entrega.
           </p>
-          <div className="hero-tags">
-            <span>
-              <i className="dot" />
-              Marquesas y quesillos
-            </span>
-            <span>
-              <i className="dot" />
-              Retiro en La Vega
-            </span>
-            <span>
-              <i className="dot" />
-              Delivery a domicilio
-            </span>
-          </div>
         </div>
       </section>
       <Catalogo

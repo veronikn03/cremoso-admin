@@ -193,7 +193,6 @@ export default function MiCuenta({ negocio, whatsapp, tasa }: { negocio: string;
   const abiertos = pedidos.filter((p) => p.estado !== "cancelado" && p.saldo_usd > 0.009);
   const porEntregar = pedidos.filter((p) => p.estado !== "cancelado" && !p.entregado);
   const saldo = Math.round(abiertos.reduce((a, p) => a + p.saldo_usd, 0) * 100) / 100;
-  const pagadoTotal = Math.round(pagos.reduce((a, p) => a + p.monto_usd, 0) * 100) / 100;
   const aviso = `Hola ${negocio}, soy ${cuenta.nombre}. Quiero reportar un pago:\nMonto: \nMétodo: \nReferencia: \n\nMi saldo pendiente es ${fUSD(saldo)}${tasa ? ` (${fBs(saldo * tasa)})` : ""}.`;
 
   return (
@@ -206,7 +205,7 @@ export default function MiCuenta({ negocio, whatsapp, tasa }: { negocio: string;
           Salir de mi cuenta
         </button>
       </div>
-      <div className="kpis k3">
+      <div className="kpis k2">
         <div className={`kpi ${saldo > 0.009 ? "hot" : ""}`}>
           <div className="l">Saldo pendiente</div>
           <div className="v">{fUSD(saldo)}</div>
@@ -216,13 +215,6 @@ export default function MiCuenta({ negocio, whatsapp, tasa }: { negocio: string;
           <div className="l">Por entregar</div>
           <div className="v">{porEntregar.length}</div>
           <div className="s">{porEntregar.length === 1 ? "pedido" : "pedidos"}</div>
-        </div>
-        <div className="kpi">
-          <div className="l">Total pagado</div>
-          <div className="v">{fUSD(pagadoTotal)}</div>
-          <div className="s">
-            {pagos.length} {pagos.length === 1 ? "pago" : "pagos"}
-          </div>
         </div>
       </div>
 
