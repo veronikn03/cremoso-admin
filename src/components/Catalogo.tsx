@@ -186,53 +186,104 @@ export default function Catalogo({
                 ×
               </button>
             </div>
-            <div className="bar" style={{ marginBottom: 10 }}>
-              <div className="muted" style={{ fontSize: 13 }}>
-                {n} {n === 1 ? "dulce" : "dulces"}
+            {n > 0 ? (
+              <>
+                <div className="list" style={{ marginBottom: 14 }}>
+                  {Object.entries(cart).map(([id, q]) => {
+                    const p = prodById(id);
+                    if (!p) return null;
+                    return (
+                      <div className="row" key={id}>
+                        <div>
+                          <div className="t">{p.nombre}</div>
+                          <div className="sub">{fUSD(p.precio_usd)} c/u</div>
+                        </div>
+                        <div className="r" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                          <div className="step">
+                            <button
+                              type="button"
+                              onClick={() => setQty(id, q - 1, p.stock)}
+                              aria-label={`Quitar una unidad de ${p.nombre}`}
+                            >
+                              −
+                            </button>
+                            <span>{q}</span>
+                            <button
+                              type="button"
+                              onClick={() => setQty(id, q + 1, p.stock)}
+                              aria-label={`Agregar una unidad de ${p.nombre}`}
+                              disabled={q >= p.stock}
+                            >
+                              +
+                            </button>
+                          </div>
+                          <button
+                            type="button"
+                            className="x"
+                            onClick={() => setQty(id, 0, p.stock)}
+                            aria-label={`Quitar ${p.nombre} del pedido`}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="bar" style={{ marginBottom: 10 }}>
+                  <div className="muted" style={{ fontSize: 13 }}>
+                    {n} {n === 1 ? "dulce" : "dulces"}
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <b className="amount-lg">{fUSD(total)}</b>
+                    {tasa > 0 && <small className="bs">{fBs(total * tasa)}</small>}
+                  </div>
+                </div>
+                <div className="fg">
+                  <label className="f">
+                    Tu nombre
+                    <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} autoComplete="name" />
+                  </label>
+                  <label className="f">
+                    Teléfono
+                    <input type="tel" value={telefono} onChange={(e) => setTelefono(e.target.value)} autoComplete="tel" />
+                  </label>
+                  <label className="f full">
+                    Nota (fecha de entrega, dedicatoria…)
+                    <input type="text" value={nota} onChange={(e) => setNota(e.target.value)} />
+                  </label>
+                </div>
+                <div className="foot full" style={{ marginTop: 16 }}>
+                  <button className="btn" type="button" disabled={!n} onClick={copiar}>
+                    {copiado ? "Copiado" : "Copiar pedido"}
+                  </button>
+                  <a
+                    className="btn pri"
+                    target="_blank"
+                    rel="noopener"
+                    href={waLink(whatsapp, mensaje())}
+                    aria-disabled={!n}
+                    onClick={(e) => !n && e.preventDefault()}
+                  >
+                    Enviar pedido por WhatsApp
+                  </a>
+                </div>
+                {whatsapp ? (
+                  <p className="muted" style={{ fontSize: 12.5, margin: "10px 0 0" }}>
+                    Si WhatsApp no se abre, copia el pedido y envíalo al{" "}
+                    <b className="num" style={{ userSelect: "all" }}>
+                      {whatsapp}
+                    </b>
+                    .
+                  </p>
+                ) : null}
+              </>
+            ) : (
+              <div className="empty">
+                <b>Tu pedido está vacío</b>
+                Agrega dulces desde el catálogo.
               </div>
-              <div style={{ textAlign: "right" }}>
-                <b className="amount-lg">{fUSD(total)}</b>
-                {tasa > 0 && <small className="bs">{fBs(total * tasa)}</small>}
-              </div>
-            </div>
-            <div className="fg">
-              <label className="f">
-                Tu nombre
-                <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} autoComplete="name" />
-              </label>
-              <label className="f">
-                Teléfono
-                <input type="tel" value={telefono} onChange={(e) => setTelefono(e.target.value)} autoComplete="tel" />
-              </label>
-              <label className="f full">
-                Nota (fecha de entrega, dedicatoria…)
-                <input type="text" value={nota} onChange={(e) => setNota(e.target.value)} />
-              </label>
-            </div>
-            <div className="foot full" style={{ marginTop: 16 }}>
-              <button className="btn" type="button" disabled={!n} onClick={copiar}>
-                {copiado ? "Copiado" : "Copiar pedido"}
-              </button>
-              <a
-                className="btn pri"
-                target="_blank"
-                rel="noopener"
-                href={waLink(whatsapp, mensaje())}
-                aria-disabled={!n}
-                onClick={(e) => !n && e.preventDefault()}
-              >
-                Enviar pedido por WhatsApp
-              </a>
-            </div>
-            {whatsapp ? (
-              <p className="muted" style={{ fontSize: 12.5, margin: "10px 0 0" }}>
-                Si WhatsApp no se abre, copia el pedido y envíalo al{" "}
-                <b className="num" style={{ userSelect: "all" }}>
-                  {whatsapp}
-                </b>
-                .
-              </p>
-            ) : null}
+            )}
           </div>
         </div>
       )}
