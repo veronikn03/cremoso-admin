@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { withRetry } from "@/lib/supabase/retry";
 
 export type ProductoInput = {
   nombre: string;
@@ -17,6 +18,7 @@ export type ProductoInput = {
 
 export async function guardarProducto(id: string | null, data: ProductoInput) {
   const supabase = await createClient();
+  await withRetry(() => supabase.auth.getUser());
   const payload = { ...data, actualizado: new Date().toISOString() };
 
   const { error } = id
@@ -32,6 +34,7 @@ export async function guardarProducto(id: string | null, data: ProductoInput) {
 
 export async function eliminarProducto(id: string) {
   const supabase = await createClient();
+  await withRetry(() => supabase.auth.getUser());
   const { error } = await supabase.from("productos").delete().eq("id", id);
   if (error) return { error: error.message };
   revalidatePath("/admin/inventario");
@@ -40,6 +43,7 @@ export async function eliminarProducto(id: string) {
 
 export async function entradaInventario(id: string, nuevoStock: number) {
   const supabase = await createClient();
+  await withRetry(() => supabase.auth.getUser());
   const { error } = await supabase
     .from("productos")
     .update({ stock: nuevoStock, actualizado: new Date().toISOString() })

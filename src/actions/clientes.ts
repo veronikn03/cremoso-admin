@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { withRetry } from "@/lib/supabase/retry";
 
 export type ClienteInput = {
   nombre: string;
@@ -11,6 +12,7 @@ export type ClienteInput = {
 
 export async function guardarCliente(id: string | null, data: ClienteInput) {
   const supabase = await createClient();
+  await withRetry(() => supabase.auth.getUser());
   const payload = { ...data, actualizado: new Date().toISOString() };
 
   const { error } = id
@@ -24,6 +26,7 @@ export async function guardarCliente(id: string | null, data: ClienteInput) {
 
 export async function generarCodigoCliente(clienteId: string) {
   const supabase = await createClient();
+  await withRetry(() => supabase.auth.getUser());
   const { data, error } = await supabase.rpc("regenerar_codigo", {
     p_cliente_id: clienteId,
   });

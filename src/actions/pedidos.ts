@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { withRetry } from "@/lib/supabase/retry";
 
 function revalidateAll() {
   revalidatePath("/admin");
@@ -23,6 +24,7 @@ export async function crearPedido(input: {
   abono?: { monto_original: number; moneda: "USD" | "Bs"; metodo: string; referencia: string } | null;
 }) {
   const supabase = await createClient();
+  await withRetry(() => supabase.auth.getUser());
 
   let clienteId = input.cliente_id;
   if (!clienteId && input.cliente_nuevo) {
@@ -63,6 +65,7 @@ export async function crearPedido(input: {
 
 export async function cancelarPedido(pedidoId: string) {
   const supabase = await createClient();
+  await withRetry(() => supabase.auth.getUser());
   const { error } = await supabase.rpc("cancelar_pedido", { p_pedido_id: pedidoId });
   if (error) return { error: error.message };
   revalidateAll();
@@ -71,6 +74,7 @@ export async function cancelarPedido(pedidoId: string) {
 
 export async function marcarEntregado(pedidoId: string, entregado: boolean) {
   const supabase = await createClient();
+  await withRetry(() => supabase.auth.getUser());
   const { error } = await supabase
     .from("pedidos")
     .update({
@@ -93,6 +97,7 @@ export async function registrarPago(input: {
   fecha: string;
 }) {
   const supabase = await createClient();
+  await withRetry(() => supabase.auth.getUser());
   if (input.pedido_id) {
     const { error } = await supabase.rpc("registrar_pago", {
       p_pedido_id: input.pedido_id,
@@ -122,6 +127,7 @@ export async function registrarPago(input: {
 
 export async function eliminarPago(pagoId: string) {
   const supabase = await createClient();
+  await withRetry(() => supabase.auth.getUser());
   const { error } = await supabase.from("pagos").delete().eq("id", pagoId);
   if (error) return { error: error.message };
   revalidateAll();
